@@ -2,6 +2,9 @@
 layout: page
 ---
 {% assign item = site.data[page.lang].downloads %}
+{% assign bisq1_downloads = 'https://bisq.network/downloads/v' | append: site.client_version %}
+{% assign bisq1_macos_x86_64 = 'Bisq-x86_64-' | append: site.client_version | append: '.dmg' %}
+{% assign bisq1_macos_aarch64 = 'Bisq-aarch64-' | append: site.client_version | append: '.dmg' %}
 <h1>Bisq1 Downloads</h1>
 {{ item.bisq1ScopeNote}}
 
@@ -28,9 +31,15 @@ layout: page
       <td>{{ item.tdMac }}</td>
       <td>
         <a class="dl-mac"
-           href="https://bisq.network/downloads/v{{ site.client_version }}/Bisq-{{ site.client_version }}.dmg">.dmg</a>
+           href="{{ bisq1_downloads }}/{{ bisq1_macos_x86_64 }}">Intel .dmg</a>
         |
-        <a href="https://bisq.network/downloads/v{{ site.client_version }}/Bisq-{{ site.client_version }}.dmg.asc">{{
+        <a href="{{ bisq1_downloads }}/{{ bisq1_macos_x86_64 }}.asc">{{
+          item.tdVerificationText0 }}</a>
+        <br>
+        <a class="dl-mac"
+           href="{{ bisq1_downloads }}/{{ bisq1_macos_aarch64 }}">Apple Silicon .dmg</a>
+        |
+        <a href="{{ bisq1_downloads }}/{{ bisq1_macos_aarch64 }}.asc">{{
           item.tdVerificationText0 }}</a>
       </td>
     </tr>
@@ -111,6 +120,8 @@ layout: page
 
   {% assign bisq2_archive = 'https://github.com/bisq-network/bisq2/archive/refs/tags' %}
   {% assign bisq2_releases = 'https://github.com/bisq-network/bisq2/releases' %}
+  {% assign bisq2_macos_x86_64 = 'Bisq-x86_64-' | append: site.bisq2_version | append: '.dmg' %}
+  {% assign bisq2_macos_aarch64 = 'Bisq-aarch64-' | append: site.bisq2_version | append: '.dmg' %}
 
   <table class="all-downloads mt-5">
     <tr class="border-bottom">
@@ -126,8 +137,13 @@ layout: page
       <td>{{ item.tdMac }}</td>
       <td>
         <a class="dl-mac"
-           href="{{ bisq2_releases }}/download/v{{ site.bisq2_version }}/Bisq-{{ site.bisq2_version }}.dmg">.dmg</a> |
-        <a href="{{ bisq2_releases }}/download/v{{ site.bisq2_version }}/Bisq-{{ site.bisq2_version }}.dmg.asc">{{
+           href="{{ bisq2_releases }}/download/v{{ site.bisq2_version }}/{{ bisq2_macos_x86_64 }}">Intel .dmg</a> |
+        <a href="{{ bisq2_releases }}/download/v{{ site.bisq2_version }}/{{ bisq2_macos_x86_64 }}.asc">{{
+          item.tdVerificationText0 }}</a>
+        <br>
+        <a class="dl-mac"
+           href="{{ bisq2_releases }}/download/v{{ site.bisq2_version }}/{{ bisq2_macos_aarch64 }}">Apple Silicon .dmg</a> |
+        <a href="{{ bisq2_releases }}/download/v{{ site.bisq2_version }}/{{ bisq2_macos_aarch64 }}.asc">{{
           item.tdVerificationText0 }}</a>
       </td>
     </tr>
@@ -217,7 +233,7 @@ layout: page
     <tr class="border-bottom">
       <td>{{ item.tdReleaseNotes }}</td>
       <td>
-        <a href="https://github.com/bisq-network/bisq-mobile/releases/anode_{{ site.bisqEasyMobile_version }}">{{
+        <a href="https://github.com/bisq-network/bisq-mobile/releases/tag/anode_{{ site.bisqEasyMobile_version }}">{{
           item.tdReleaseNotes }}</a>
       </td>
     </tr>
@@ -240,7 +256,6 @@ layout: page
   <p>{{ item.pBisqConnectMobile }}</p>
 
   <table class="all-downloads mt-5">
-    <tr class="border-bottom">
     <tr class="border-bottom">
       <td>Bisq Connect <span data-version="bisq-connect">{{ site.bisqConnectMobile_version }}</span></td>
       <td>
@@ -269,7 +284,7 @@ layout: page
     <tr class="border-bottom">
       <td>{{ item.tdReleaseNotes }}</td>
       <td>
-        <a href="https://github.com/bisq-network/bisq-mobile/releases/connect_{{ site.bisqConnectMobile_version }}">{{
+        <a href="https://github.com/bisq-network/bisq-mobile/releases/tag/connect_{{ site.bisqConnectMobile_version }}">{{
           item.tdReleaseNotes }}</a>
       </td>
     </tr>
@@ -291,98 +306,4 @@ layout: page
     </tr>
   </table>
 </div>
-<script>
-  (async () => {
-    const api = 'https://api.github.com/repos/bisq-network/bisq-mobile/releases?per_page=100';
-
-    const PREFIXES = {
-      easy: 'anode_',
-      connect: 'connect_'
-    };
-
-    function sanitizeTag(tag) {
-      return (tag || '').trim().replace(/[^a-zA-Z0-9._-]/g, '');
-    }
-
-    function extractVersion(tag, prefix) {
-      const safeTag = sanitizeTag(tag);
-      const escapedPrefix = prefix.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-      return safeTag.replace(new RegExp('^' + escapedPrefix, 'i'), '');
-    }
-
-    function findLatestByPrefix(releases, prefix) {
-      const matches = releases.filter(r => {
-        if (r.draft) return false;
-        const tag = sanitizeTag(r.tag_name);
-        return tag.toLowerCase().startsWith(prefix.toLowerCase());
-      });
-
-      if (matches.length === 0) return null;
-
-      return matches.reduce((latest, current) => {
-        if (!latest) return current;
-        const latestTime = Date.parse(latest.published_at || latest.created_at || 0);
-        const currentTime = Date.parse(current.published_at || current.created_at || 0);
-
-        if (Number.isNaN(latestTime)) return current;
-        if (Number.isNaN(currentTime)) return latest;
-
-        return currentTime > latestTime ? current : latest;
-      }, null);
-    }
-
-    try {
-      const res = await fetch(api, {
-        headers: { 'Accept': 'application/vnd.github.v3+json' }
-      });
-
-      if (!res.ok) throw new Error('GitHub API error ' + res.status);
-
-      const releases = await res.json();
-      if (!Array.isArray(releases)) throw new Error('Unexpected GitHub API response');
-
-      const easyRelease = findLatestByPrefix(releases, PREFIXES.easy);
-      const connectRelease = findLatestByPrefix(releases, PREFIXES.connect);
-
-      if (!easyRelease) {
-        console.warn('No Bisq Easy release found');
-      } else {
-        const easyVersion = extractVersion(easyRelease.tag_name, PREFIXES.easy);
-
-        const easyPlaceholder = '{{ site.bisqEasyMobile_version }}';
-        if (easyPlaceholder) {
-          document.querySelectorAll(`a[href*="anode_${easyPlaceholder}"]`).forEach(a => {
-            a.href = a.href.replaceAll(easyPlaceholder, easyVersion);
-          });
-        }
-
-        document.querySelectorAll('[data-version="bisq-easy"]').forEach(el => {
-          el.textContent = easyVersion;
-        });
-
-        console.log(`Bisq Easy version updated to ${easyVersion}`);
-      }
-
-      if (!connectRelease) {
-        console.warn('No Bisq Connect release found');
-      } else {
-        const connectVersion = extractVersion(connectRelease.tag_name, PREFIXES.connect);
-
-        const connectPlaceholder = '{{ site.bisqConnectMobile_version }}';
-        if (connectPlaceholder) {
-          document.querySelectorAll(`a[href*="connect_${connectPlaceholder}"]`).forEach(a => {
-            a.href = a.href.replaceAll(connectPlaceholder, connectVersion);
-          });
-        }
-
-        document.querySelectorAll('[data-version="bisq-connect"]').forEach(el => {
-          el.textContent = connectVersion;
-        });
-
-        console.log(`Bisq Connect version updated to ${connectVersion}`);
-      }
-    } catch (err) {
-      console.error('Failed to fetch Bisq Mobile releases:', err);
-    }
-  })();
-</script>
+<script defer src="/js/downloads.js"></script>

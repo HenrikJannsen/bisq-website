@@ -6,9 +6,7 @@ main_nav:
   community: Comunidade # 14 characters max
   gettingStarted: Começando # main nav link: please be as short as possible
   bisqDAO: A DAO Bisq # main nav link: please be as short as possible
-  statistics: Estatísticas # main nav link: please be as short as possible
   faq: FAQ # main nav link: please be as short as possible
-  markets: Mercados # main nav link: please be as short as possible
 
 footer:
   bisqEasyMobile: App de notificações da Bisq
@@ -18,7 +16,6 @@ footer:
   liRoadmap: Plano
   liBenefactors: Benefactors # see https://bisq.network/benefactors for context
   liContribute: Contribuir
-  liMarketData: API de dados de mercado
   liBlog: Blog
   joinBisq: Junte-se à Comunidade
 

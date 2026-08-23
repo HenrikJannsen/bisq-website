@@ -5,6 +5,9 @@ layout: default
 <script defer src="/js/home.js"></script>
 
 {% assign item = site.data[page.lang].homepage_content %}
+{% assign bisq1_downloads = 'https://bisq.network/downloads/v' | append: site.client_version %}
+{% assign bisq1_macos_x86_64 = 'Bisq-x86_64-' | append: site.client_version | append: '.dmg' %}
+{% assign bisq1_macos_aarch64 = 'Bisq-aarch64-' | append: site.client_version | append: '.dmg' %}
 <div class="container fadeIn">
   <main class="bd-masthead" id="content" role="main">
     <div class="row align-items-center">
@@ -40,9 +43,9 @@ layout: default
                   </a>
                 </div>
 
-                <div class="id-mac hidden">
-                  <a class="dl-mac"
-                     href="https://bisq.network/downloads/v{{ site.client_version }}/Bisq-{{ site.client_version }}.dmg">
+                <div class="id-mac-x86_64 hidden">
+                  <a class="dl-mac-x86_64"
+                     href="{{ bisq1_downloads }}/{{ bisq1_macos_x86_64 }}">
                     <div class="float-left">
                       <img src="/images/icon-apple-g.svg" class="os-icon os-icon-g" alt="Download Bisq for macOS"
                            loading="lazy">
@@ -51,7 +54,38 @@ layout: default
                       {{ item.buttonMac }}
                     </div>
                     <div class="float-right">
-                      .dmg <img class="btn-icon-img" src="/images/arrow-down-w.svg"/>
+                      Intel .dmg <img class="btn-icon-img" src="/images/arrow-down-w.svg"/>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="id-mac-aarch64 hidden">
+                  <a class="dl-mac-aarch64"
+                     href="{{ bisq1_downloads }}/{{ bisq1_macos_aarch64 }}">
+                    <div class="float-left">
+                      <img src="/images/icon-apple-g.svg" class="os-icon os-icon-g" alt="Download Bisq for macOS"
+                           loading="lazy">
+                      <img src="/images/icon-apple-w.svg" class="os-icon os-icon-w" alt="Download Bisq for macOS"
+                           loading="lazy">
+                      {{ item.buttonMac }}
+                    </div>
+                    <div class="float-right">
+                      Apple Silicon .dmg <img class="btn-icon-img" src="/images/arrow-down-w.svg"/>
+                    </div>
+                  </a>
+                </div>
+
+                <div class="id-mac hidden">
+                  <a href="{% lingual_link downloads %}">
+                    <div class="float-left">
+                      <img src="/images/icon-apple-g.svg" class="os-icon os-icon-g" alt="Download Bisq for macOS"
+                           loading="lazy">
+                      <img src="/images/icon-apple-w.svg" class="os-icon os-icon-w" alt="Download Bisq for macOS"
+                           loading="lazy">
+                      {{ item.buttonMac }}
+                    </div>
+                    <div class="float-right">
+                      Select .dmg <img class="btn-icon-img" src="/images/arrow-down-w.svg"/>
                     </div>
                   </a>
                 </div>
@@ -119,7 +153,7 @@ layout: default
             <a href="https://play.google.com/store/apps/details?id=com.joachimneumann.bisq" target="_blank"
                rel="noopener"
                class="downloads-android hidden btn btn-lg btn-outline-secondary btn-icon hero-btn col-sm-12 col-md-12 col-lg-3 px-0 shadow-btn"
-               onclick="ga('send', 'event', 'Jumbotron actions', 'download', 'android-notifications');">
+               data-ga-category="Jumbotron actions" data-ga-action="download" data-ga-label="android-notifications">
               {{ item.androidNotificationsApp }} <img src="/images/icon-android-b.svg" class="btn-icon-img"
                                                       alt="Download Bisq Notification App for Android" loading="lazy">
             </a>
@@ -127,7 +161,7 @@ layout: default
 
             <a href="https://itunes.apple.com/us/app/bisq-mobile/id1424420411" target="_blank" rel="noopener"
                class="downloads-ios hidden btn btn-lg btn-outline-secondary btn-icon hero-btn col-sm-12 col-md-12 col-lg-3 px-0 shadow-btn"
-               onclick="ga('send', 'event', 'Jumbotron actions', 'download', 'ios-notifications');">
+               data-ga-category="Jumbotron actions" data-ga-action="download" data-ga-label="ios-notifications">
               {{ item.iosNotificationApp }} <img src="/images/icon-apple-b.svg" class="btn-icon-img"
                                                  alt="Download Bisq Notification App for iOS" loading="lazy">
             </a>
@@ -147,7 +181,7 @@ layout: default
             </a>
             <div id="video-overlay" style="display:none">
               <div class="embed-responsive">
-                <iframe id="video" width="420" height="315" src="//www.youtube.com/embed/9B7te184ZpQ?rel=0"
+                <iframe id="video" width="420" height="315" src="https://www.youtube.com/embed/9B7te184ZpQ?rel=0"
                         frameborder="0" allowfullscreen></iframe>
               </div>
             </div>
@@ -164,7 +198,7 @@ layout: default
             v{{ site.client_version }}
             <span class="seperator-version"> | </span>
             <span class="id-win64 hidden">{{ item.runningWindows }}</span>
-            <span class="id-mac hidden">{{ item.runningMac }}</span>
+            <span class="id-mac id-mac-x86_64 id-mac-aarch64 hidden">{{ item.runningMac }}</span>
             <span class="id-deb64 hidden">{{ item.runningDebian }}</span>
             <span class="id-rpm64 hidden">{{ item.runningRedHat }}</span>
             <span class="id-all hidden">{{ item.currentVersion }}</span>
@@ -327,19 +361,3 @@ layout: default
 
   </div>
 </div>
-
-{% comment %}
-<!-- future stats section -->
-<div class="row-block container">
-
-  <div class="row">
-
-    <div class="col-12 col-md-6 grey text-sans">
-      <h1 id="join-the-community" class="oversized">300%</h1>
-      <p>Data caption</p>
-    </div>
-
-  </div>
-
-</div>
-{% endcomment %}
